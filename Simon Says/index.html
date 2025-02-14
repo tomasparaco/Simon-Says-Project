@@ -1,45 +1,46 @@
 <!DOCTYPE html>
-<html long ="es"> 
-    <head>
-        <meta charset="UTF.8">
-        <meta name="viewport"  content=" width= width-devce, initial.scale = 1.0">
-        <title> Simon Says </title> 
-        <link rel="stylesheet" href="style.css">
+<html lang="en">
 
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simon Says</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel=" icon" href="./assets/logo.ico" type="image/x-icon">
+    <script src="script.js" defer></script>
+</head>
 
-    <body>
-
-        <div class="simon-says-container">
-            <h1 class="game-title">Simon Says</h1>
-            <p class="welcome-message">Bienvenido al juego de Simon Says!</p>
-            <div class="button-container">
-              <button class="purple-button"><a href="./jugar.html ">Jugar</a></button>
-              
+<body>
+    <div class="parent" id="parent">
+        <div id="container">
+            <div style="--color:red"><span class="boxText">0</span></div>
+            <div style="--color:blue"><span class="boxText">1</span></div>
+            <div style="--color:yellow"><span class="boxText">2</span></div>
+            <div style="--color:rgb(0,255,0)"><span class="boxText">3</span></div>
+        </div>
+        <div id="scores">
+            <div class="transition">
+                <div>Score :&nbsp;</div>
+                <div id="currentScr">
+                    <div>0</div>
+                </div>
             </div>
-            <div class="button-container">
-              <button class="purple-button"><a href="./puntuaciones.html">Ver puntuaciones</a></button>
+            <div class="transition">
+                <div>High Score :&nbsp;</div>
+                <div id="highScr">
+                    <div>0</div>
+                </div>
             </div>
-            <p class="instruction-text">Antes de empezar a jugar debe llenar sus datos:</p>
-            <form class="input-group">
-              <label for="nombre" class="input-label">Nombre</label>
-              <div class="input-wrapper">
-                
-              </div>
-            </form>
-            
-            
-            <div class="button-container">
-              <button class="purple-button">Guardar</button>
-            </div>
-          </div>
-
-          
-          
-        
-       
-
-        <script src="./simonDice.js"></script>
-    </body>
+        </div>
+    </div>
+    <button onclick="startGame()" id="button">Start Game</button>
+    <div id="gameOverMessage" class="hidden">
+        <h1>Juego Terminado</h1>
+        <button id="restartButton">Reiniciar Juego</button>
+    </div>
+</body>
+<script src='https://kit.fontawesome.com/8e5e768940.js' crossorigin='anonymous'></script>
 
 </html>
+          
+    
