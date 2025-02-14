@@ -1,19 +1,49 @@
 let divs = Array.from(document.querySelectorAll('#container div'));
 let parent = document.getElementById('parent'); let button = document.getElementById('button'); let gameArray, gameArrayIndex, score, gameOver; let highestScore = 0; let close = document.getElementById('close'); let currentScr = document.getElementById('currentScr'); let highScr = document.getElementById('highScr'); let title = document.getElementById('title');
+
+// Cargar sonidos
+const sounds = {
+    flash: [
+        new Audio('./sounds/red_flash.mp3'), // Sonido cuando el botón se ilumina (rojo)
+        new Audio('./sounds/blue_flash.mp3'), // Sonido cuando el botón se ilumina (azul)
+        new Audio('./sounds/yellow_flash.mp3'), // Sonido cuando el botón se ilumina (amarillo)
+        new Audio('./sounds/green_flash.mp3') // Sonido cuando el botón se ilumina (verde)
+    ],
+    click: [
+        new Audio('./sounds/red_click.ogg'), // Sonido cuando el jugador hace clic (rojo)
+        new Audio('./sounds/blue_click.ogg'), // Sonido cuando el jugador hace clic (azul)
+        new Audio('./sounds/yellow_click.ogg'), // Sonido cuando el jugador hace clic (amarillo)
+        new Audio('./sounds/green_click.ogg') // Sonido cuando el jugador hace clic (verde)
+    ]
+};
+
+
 startGame = () => {
-    gameOver = false; gameArray = []; gameArrayIndex = 0; score = 0;
+    gameOver = false; 
+    gameArray = []; 
+    gameArrayIndex = 0; 
+    score = 0;
+
+    // Mostrar el contenedor del juego y ocultar el botón de inicio
+    parent.classList.remove('hidden');
+    button.classList.add('hidden');
+
     divs.forEach(e => {
         e.style.cursor = 'pointer';
         e.addEventListener('click', eventlisten);
-    })
+    });
+
     let random = Math.floor(Math.random() * divs.length);
     gameArray.push(random);
     setTimeout(() => { divs[random].classList.add('flash'); }, 200);
     setTimeout(() => { divs[random].classList.remove('flash'); }, 500);
 }
 
+
 function eventlisten() {
     this.classList.add('flash');
+    const index = divs.indexOf(this); // Obtener el índice del botón
+    sounds.click[index].play(); // Reproducir sonido de clic
     setTimeout(() => { this.classList.remove('flash'); }, 200);
     checkWin(parseInt(this.textContent));
 }
@@ -47,6 +77,7 @@ setColor = () => {
         })
         for (let i = 0; i < gameArray.length; i++) {
             divs[gameArray[i]].classList.add('flash');
+            sounds.flash[gameArray[i]].play(); // Reproducir sonido de flash
             await removeColor(i);
             await changeColor();
             if (i == gameArray.length - 1) {
@@ -59,6 +90,7 @@ setColor = () => {
         }
     })
 };
+
 
 removeColor = (index) => {
     return new Promise((resolve, reject) => {
@@ -79,11 +111,7 @@ function resetGame() {
     });
     let curscr = Array.from(document.querySelectorAll('#currentScr div')).length; let highscr = Array.from(document.querySelectorAll('#highScr div')).length;
     addElements(score, curscr, currentScr); addElements(highestScore, highscr, highScr);
-    inst.innerHTML = '<div id="gameFinished">Game Over!</div><i class="fa-solid fa-xmark" id="close"></i>';
-    inst.classList.add('gameOver');
-    inst.style.transform = 'translate(-50%,-50%) scale(1)';
-    close = document.getElementById('close');
-    close.addEventListener('click', scale);
+    
 }
 
 function addElements(a, b, c) {
