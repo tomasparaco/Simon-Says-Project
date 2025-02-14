@@ -11,6 +11,21 @@
 </head>
 
 <body>
+
+<h1>Simon Says</h1>  
+        
+    <form class="input-group">
+        <label for="nombre" class="input-label">Insert name:</label>
+        <div class="input-wrapper">
+          <input type="text" id="name" placeholder="nombre"> <br>
+          <input type="submit" onclick="saveName()">
+          
+
+        </style>
+
+    <br><br><br>
+
+            
     <div class="parent" id="parent">
         <div id="container">
             <div style="--color:red"><span class="boxText">0</span></div>
@@ -34,10 +49,17 @@
         </div>
     </div>
     <button onclick="startGame()" id="button">Start Game</button>
-    <div id="gameOverMessage" class="hidden">
+     <div id="gameOverMessage" class="hidden">
         <h1>Juego Terminado</h1>
         <button id="restartButton">Reiniciar Juego</button>
     </div>
+        
+        
+        </section>
+          
+          
+
+<script src="./script.js"> </script>
 </body>
 <script src='https://kit.fontawesome.com/8e5e768940.js' crossorigin='anonymous'></script>
 

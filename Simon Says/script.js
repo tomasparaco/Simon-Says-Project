@@ -188,3 +188,15 @@ document.getElementById('restartButton').addEventListener('click', () => {
     resetGameVariables(); // Restablecer todas las variables necesarias
     startGame(); // Iniciar el juego
 });
+
+// Guardar el nombre en local storage
+function saveName(){
+    var uid = document.getElementById("name").value;
+    alert(uid);
+
+    var user = localStorage.setItem(uid,highScr)
+
+    // Mostrar datos en tabla 
+    var user = localStorage.getItem(uid,highScr)
+}
+
