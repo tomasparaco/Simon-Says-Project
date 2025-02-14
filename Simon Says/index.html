@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html long ="es"> 
+    <head>
+        <meta charset="UTF.8">
+        <meta name="viewport"  content=" width= width-devce, initial.scale = 1.0">
+        <title> Simon Says </title> 
+        <link rel="stylesheet" href="style.css">
+
+    </head>
+
+    <body>
+
+        <div class="simon-says-container">
+            <h1 class="game-title">Simon Says</h1>
+            <p class="welcome-message">Bienvenido al juego de Simon Says!</p>
+            <div class="button-container">
+              <button class="purple-button"><a href="./jugar.html ">Jugar</a></button>
+              
+            </div>
+            <div class="button-container">
+              <button class="purple-button"><a href="./puntuaciones.html">Ver puntuaciones</a></button>
+            </div>
+            <p class="instruction-text">Antes de empezar a jugar debe llenar sus datos:</p>
+            <form class="input-group">
+              <label for="nombre" class="input-label">Nombre</label>
+              <div class="input-wrapper">
+                <input type="text" id="nombre" class="input-field" placeholder="Ejemplo Nombre" aria-label="Nombre">
+              </div>
+            </form>
+            <form class="input-group">
+              <label for="apellido" class="input-label">Apellido</label>
+              <div class="input-wrapper">
+                <input type="text" id="apellido" class="input-field" placeholder="Ejemplo Apellido" aria-label="Apellido">
+              </div>
+            </form>
+            <div class="button-container">
+              <button class="purple-button">Guardar</button>
+            </div>
+          </div>
+          
+        
+       
+
+        <script src="./simonDice.js"></script>
+    </body>
+
+</html>
