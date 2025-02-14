@@ -24,6 +24,8 @@ startGame = () => {
     gameArrayIndex = 0; 
     score = 0;
 
+    resetGameVariables();
+
     // Mostrar el contenedor del juego y ocultar el botón de inicio
     parent.classList.remove('hidden');
     button.classList.add('hidden');
@@ -33,10 +35,9 @@ startGame = () => {
         e.addEventListener('click', eventlisten);
     });
 
-    let random = Math.floor(Math.random() * divs.length);
-    gameArray.push(random);
-    setTimeout(() => { divs[random].classList.add('flash'); }, 200);
-    setTimeout(() => { divs[random].classList.remove('flash'); }, 500);
+    gameAutomate();
+
+   
 }
 
 
@@ -58,12 +59,15 @@ function eventlisten() {
 }
 
 async function gameAutomate() {
-    gameArrayIndex = 0;
-    if (gameArray.length != 0) { await setColor(); }
+    gameArrayIndex = 0; // Reiniciar el índice de la secuencia
+    await setColor(); // Mostrar la secuencia actual
+
+    // Agregar un nuevo color aleatorio a la secuencia
     let random = Math.floor(Math.random() * divs.length);
     gameArray.push(random);
-    divs[random].classList.add('flash');
-    setTimeout(() => { divs[random].classList.remove('flash'); }, 200);
+    setTimeout(() => { divs[random].classList.add('flash'); }, 200);
+    setTimeout(() => { divs[random].classList.remove('flash'); }, 500);
+    
 }
 
 checkWin = (boxText) => {
@@ -135,9 +139,14 @@ function resetGame() {
         e.removeEventListener('click', eventlisten);
         e.style.cursor = 'default';
     });
-    let curscr = Array.from(document.querySelectorAll('#currentScr div')).length; let highscr = Array.from(document.querySelectorAll('#highScr div')).length;
-    addElements(score, curscr, currentScr); addElements(highestScore, highscr, highScr);
-    
+
+    // Mostrar el mensaje de "Juego Terminado"
+    document.getElementById('gameOverMessage').classList.remove('hidden');
+
+    let curscr = Array.from(document.querySelectorAll('#currentScr div')).length; 
+    let highscr = Array.from(document.querySelectorAll('#highScr div')).length;
+    addElements(score, curscr, currentScr); 
+    addElements(highestScore, highscr, highScr);
 }
 
 function addElements(a, b, c) {
@@ -159,3 +168,23 @@ function scale() {
     currentScr.style.transform = '';
     title.style.opacity = '0.5';
 }
+
+function resetGameVariables() {
+    gameOver = false; 
+    gameArray = []; 
+    gameArrayIndex = 0; 
+    score = 0;
+
+    // Restablecer la puntuación en la interfaz
+    currentScr.innerHTML = '<div>0</div>'; // Restablecer la puntuación actual
+    highScr.innerHTML = '<div>' + highestScore + '</div>'; // Mostrar el mejor puntaje
+}
+
+document.getElementById('restartButton').addEventListener('click', () => {
+    // Ocultar el mensaje de "Juego Terminado"
+    document.getElementById('gameOverMessage').classList.add('hidden');
+
+    // Reiniciar el juego
+    resetGameVariables(); // Restablecer todas las variables necesarias
+    startGame(); // Iniciar el juego
+});
