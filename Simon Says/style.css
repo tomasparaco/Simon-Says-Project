@@ -228,6 +228,22 @@ i {
     }
 }
 
+#gameOverMessage {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px gray;
+    text-align: center;
+    z-index: 10;
+}
+
+.hidden {
+    display: none;
+}
 .simon-says-container {
     background-color: #f7f9f9;
     display: flex;
