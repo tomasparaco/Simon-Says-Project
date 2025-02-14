@@ -41,9 +41,18 @@ startGame = () => {
 
 
 function eventlisten() {
-    this.classList.add('flash');
     const index = divs.indexOf(this); // Obtener el índice del botón
+
+    // Interrumpir y reproducir el sonido
+    if (!sounds.click[index].paused) {
+        sounds.click[index].pause(); // Detener el sonido si está en reproducción
+    }
+    sounds.click[index].currentTime = 0; // Reiniciar el tiempo del sonido
     sounds.click[index].play(); // Reproducir sonido de clic
+
+    this.classList.add('flash');
+
+    // Esperar un momento antes de quitar el brillo
     setTimeout(() => { this.classList.remove('flash'); }, 200);
     checkWin(parseInt(this.textContent));
 }
@@ -74,21 +83,38 @@ setColor = () => {
         divs.forEach(e => {
             e.removeEventListener('click', eventlisten);
             e.style.cursor = 'default';
-        })
+        });
+
         for (let i = 0; i < gameArray.length; i++) {
-            divs[gameArray[i]].classList.add('flash');
-            sounds.flash[gameArray[i]].play(); // Reproducir sonido de flash
-            await removeColor(i);
-            await changeColor();
-            if (i == gameArray.length - 1) {
-                divs.forEach(e => {
-                    e.addEventListener('click', eventlisten);
-                    e.style.cursor = 'pointer';
-                })
-                resolve(true);
-            };
+            const index = gameArray[i];
+            divs[index].classList.add('flash');
+
+            // Interrumpir y reproducir el sonido
+            if (!sounds.flash[index].paused) {
+                sounds.flash[index].pause(); // Detener el sonido si está en reproducción
+            }
+            sounds.flash[index].currentTime = 0; // Reiniciar el tiempo del sonido
+            sounds.flash[index].play(); // Reproducir sonido de flash
+
+            // Esperar a que el sonido termine de reproducirse
+            await new Promise(resolve => {
+                setTimeout(() => {
+                    divs[index].classList.remove('flash');
+                    resolve();
+                }, 400); // Tiempo de espera después de que se reproduce el sonido
+            });
+
+            // Esperar un tiempo adicional antes de mostrar el siguiente color
+            await new Promise(resolve => setTimeout(resolve, 300)); // Tiempo entre colores
         }
-    })
+
+        // Permitir la interacción del usuario después de que se haya mostrado la secuencia
+        divs.forEach(e => {
+            e.addEventListener('click', eventlisten);
+            e.style.cursor = 'pointer';
+        });
+        resolve(true);
+    });
 };
 
 
