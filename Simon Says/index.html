@@ -12,6 +12,7 @@
 
 <body>
     <div class="parent hidden" id="parent">
+        <h1 id="gameTitle">Simon Says</h1> <!-- Título del juego -->
         <div id="container">
             <div style="--color:red"><span class="boxText">0</span></div>
             <div style="--color:blue"><span class="boxText">1</span></div>
@@ -19,7 +20,7 @@
             <div style="--color:rgb(0,255,0)"><span class="boxText">3</span></div>
         </div>
         <div id="scores">
-            <div id="playerNameDisplay" style="font-weight: bold; margin-bottom: 10px;"></div> <!-- Nuevo div para mostrar el nombre -->
+            <div id="playerNameDisplay" style="font-weight: bold; margin-bottom: 10px;"></div>
             <div class="transition">
                 <div>Score :&nbsp;</div>
                 <div id="currentScr">
@@ -43,7 +44,6 @@
         <div id="highScoresList"></div>
     </div>
 
-    <!-- Mensaje de Game Over -->
     <div id="gameOverMessage" class="hidden">
         <h1>Juego Terminado</h1>
         <button id="restartButton">Reiniciar Juego</button>
