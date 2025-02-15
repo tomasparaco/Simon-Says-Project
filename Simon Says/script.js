@@ -1,23 +1,63 @@
 let divs = Array.from(document.querySelectorAll('#container div'));
-let parent = document.getElementById('parent'); let button = document.getElementById('button'); let gameArray, gameArrayIndex, score, gameOver; let highestScore = 0; let close = document.getElementById('close'); let currentScr = document.getElementById('currentScr'); let highScr = document.getElementById('highScr'); let title = document.getElementById('title');
+let parent = document.getElementById('parent');
+let gameArray, gameArrayIndex, score, gameOver;
+let highestScore = 0;
+let currentScr = document.getElementById('currentScr');
+let highScr = document.getElementById('highScr');
+let playerNameInput = document.getElementById('playerName');
+let startButton = document.getElementById('startButton');
+let menu = document.getElementById('menu');
+let highScoresList = document.getElementById('highScoresList');
 
 // Cargar sonidos
 const sounds = {
     flash: [
-        new Audio('./sounds/red_flash.mp3'), // Sonido cuando el botón se ilumina (rojo)
-        new Audio('./sounds/blue_flash.mp3'), // Sonido cuando el botón se ilumina (azul)
-        new Audio('./sounds/yellow_flash.mp3'), // Sonido cuando el botón se ilumina (amarillo)
-        new Audio('./sounds/green_flash.mp3') // Sonido cuando el botón se ilumina (verde)
+        new Audio('./sounds/red_flash.mp3'),
+        new Audio('./sounds/blue_flash.mp3'),
+        new Audio('./sounds/yellow_flash.mp3'),
+        new Audio('./sounds/green_flash.mp3')
     ],
     click: [
-        new Audio('./sounds/red_click.ogg'), // Sonido cuando el jugador hace clic (rojo)
-        new Audio('./sounds/blue_click.ogg'), // Sonido cuando el jugador hace clic (azul)
-        new Audio('./sounds/yellow_click.ogg'), // Sonido cuando el jugador hace clic (amarillo)
-        new Audio('./sounds/green_click.ogg') // Sonido cuando el jugador hace clic (verde)
+        new Audio('./sounds/red_click.ogg'),
+        new Audio('./sounds/blue_click.ogg'),
+        new Audio('./sounds/yellow_click.ogg'),
+        new Audio('./sounds/green_click.ogg')
     ]
 };
 
+// Cargar el nombre del jugador y los puntajes más altos desde localStorage
+function loadHighScores() {
+    const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
+    highScoresList.innerHTML = ''; // Limpiar la lista actual
+    highScores.forEach(score => {
+        const scoreItem = document.createElement('div');
+        scoreItem.textContent = `${score.name}: ${score.score}`;
+        highScoresList.appendChild(scoreItem);
+    });
+}
 
+// Guardar el puntaje más alto en localStorage
+function saveHighScore(name, score) {
+    const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
+    highScores.push({ name, score });
+    localStorage.setItem('highScores', JSON.stringify(highScores));
+}
+
+// Iniciar el juego
+startButton.addEventListener('click', () => {
+    const playerName = playerNameInput.value.trim();
+    if (playerName) {
+        localStorage.setItem('playerName', playerName); // Guardar el nombre del jugador
+        document.getElementById('playerNameDisplay').textContent = `Jugador: ${playerName}`; // Mostrar el nombre del jugador
+        menu.classList.add('hidden'); // Ocultar el menú
+        parent.classList.remove('hidden'); // Mostrar el contenedor del juego
+        startGame(); // Iniciar el juego
+    } else {
+        alert('Por favor, ingresa tu nombre.');
+    }
+});
+
+// Función para iniciar el juego
 startGame = () => {
     gameOver = false; 
     gameArray = []; 
@@ -28,19 +68,15 @@ startGame = () => {
 
     // Mostrar el contenedor del juego y ocultar el botón de inicio
     parent.classList.remove('hidden');
-    button.classList.add('hidden');
-
     divs.forEach(e => {
         e.style.cursor = 'pointer';
         e.addEventListener('click', eventlisten);
     });
 
-    gameAutomate();
-
-   
+    gameAutomate(); // Iniciar la secuencia del juego
 }
 
-
+// Función para manejar el evento de clic en los botones
 function eventlisten() {
     const index = divs.indexOf(this); // Obtener el índice del botón
 
@@ -58,6 +94,7 @@ function eventlisten() {
     checkWin(parseInt(this.textContent));
 }
 
+// Función para automatizar el juego
 async function gameAutomate() {
     gameArrayIndex = 0; // Reiniciar el índice de la secuencia
     await setColor(); // Mostrar la secuencia actual
@@ -67,21 +104,26 @@ async function gameAutomate() {
     gameArray.push(random);
     setTimeout(() => { divs[random].classList.add('flash'); }, 200);
     setTimeout(() => { divs[random].classList.remove('flash'); }, 500);
-    
 }
 
+// Función para verificar si el jugador ha ganado
 checkWin = (boxText) => {
     (gameArray[gameArrayIndex] != boxText) ? (resetGame()) : ({});
     if (gameArrayIndex == gameArray.length - 1 && !gameOver) {
         setTimeout(() => {
             score++;
-            (score > highestScore) ? (highestScore = score) : ({});
-            gameAutomate();
+            if (score > highestScore) {
+                highestScore = score;
+                const playerName = localStorage.getItem('playerName');
+                saveHighScore(playerName, highestScore); // Guardar el nuevo puntaje más alto
+            }
+            gameAutomate(); // Iniciar la siguiente ronda
         }, 500);
     }
-    if (gameArray.length != 0) { gameArrayIndex++ };
+    if (gameArray.length != 0) { gameArrayIndex++; }
 }
 
+// Función para mostrar los colores en la secuencia
 setColor = () => {
     return new Promise(async (resolve, reject) => {
         divs.forEach(e => {
@@ -89,7 +131,7 @@ setColor = () => {
             e.style.cursor = 'default';
         });
 
-        for (let i = 0; i < gameArray.length; i++) {
+               for (let i = 0; i < gameArray.length; i++) {
             const index = gameArray[i];
             divs[index].classList.add('flash');
 
@@ -121,20 +163,11 @@ setColor = () => {
     });
 };
 
-
-removeColor = (index) => {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            divs[gameArray[index]].classList.remove('flash');
-            resolve(true);
-        }, 200);
-    })
-};
-
-changeColor = () => { return new Promise((resolve, reject) => { setTimeout(() => { resolve(true); }, 200); }) }
-
+// Función para reiniciar el juego
 function resetGame() {
-    gameOver = true;
+    gameOver = true; // Indica que el juego ha terminado
+
+    // Remover los event listeners de todos los elementos del juego
     divs.forEach(e => {
         e.removeEventListener('click', eventlisten);
         e.style.cursor = 'default';
@@ -143,12 +176,20 @@ function resetGame() {
     // Mostrar el mensaje de "Juego Terminado"
     document.getElementById('gameOverMessage').classList.remove('hidden');
 
+    // Calcular las puntuaciones actuales y más altas
     let curscr = Array.from(document.querySelectorAll('#currentScr div')).length; 
     let highscr = Array.from(document.querySelectorAll('#highScr div')).length;
+
+    // Actualizar las puntuaciones en la interfaz
     addElements(score, curscr, currentScr); 
     addElements(highestScore, highscr, highScr);
+
+    // Agregar evento al botón de cerrar
+    close = document.getElementById('close');
+    close.addEventListener('click', scale);
 }
 
+// Función para agregar elementos a la interfaz
 function addElements(a, b, c) {
     if (a > (b - 1)) {
         for (let i = b; i <= a; i++) {
@@ -156,19 +197,11 @@ function addElements(a, b, c) {
             x.innerText = i;
             c.appendChild(x);
         }
-    };
+    }
     c.style.transform = `translateY(${-50 * a}px)`;
 }
-close.addEventListener('click', scale);
 
-function scale() {
-    inst.style.transform = 'translate(-50%, -50%) scale(0)';
-    parent.style.transform = 'scale(1)';
-    button.style.transform = 'scale(1)';
-    currentScr.style.transform = '';
-    title.style.opacity = '0.5';
-}
-
+// Función para reiniciar las variables del juego
 function resetGameVariables() {
     gameOver = false; 
     gameArray = []; 
@@ -180,23 +213,7 @@ function resetGameVariables() {
     highScr.innerHTML = '<div>' + highestScore + '</div>'; // Mostrar el mejor puntaje
 }
 
-document.getElementById('restartButton').addEventListener('click', () => {
-    // Ocultar el mensaje de "Juego Terminado"
-    document.getElementById('gameOverMessage').classList.add('hidden');
-
-    // Reiniciar el juego
-    resetGameVariables(); // Restablecer todas las variables necesarias
-    startGame(); // Iniciar el juego
-});
-
-// Guardar el nombre en local storage
-function saveName(){
-    var uid = document.getElementById("name").value;
-    alert(uid);
-
-    var user = localStorage.setItem(uid,highScr)
-
-    // Mostrar datos en tabla 
-    var user = localStorage.getItem(uid,highScr)
-}
-
+// Cargar los puntajes más altos al cargar la página
+window.onload = () => {
+    loadHighScores();
+};
