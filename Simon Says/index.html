@@ -6,27 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simon Says</title>
     <link rel="stylesheet" href="style.css">
-    <link rel=" icon" href="./assets/logo.ico" type="image/x-icon">
+    <link rel="icon" href="./assets/logo.ico" type="image/x-icon">
     <script src="script.js" defer></script>
 </head>
 
 <body>
-
-<h1>Simon Says</h1>  
-        
-    <form class="input-group">
-        <label for="nombre" class="input-label">Insert name:</label>
-        <div class="input-wrapper">
-          <input type="text" id="name" placeholder="nombre"> <br>
-          <input type="submit" onclick="saveName()">
-          
-
-        </style>
-
-    <br><br><br>
-
-            
-    <div class="parent" id="parent">
+    <div class="parent hidden" id="parent">
         <div id="container">
             <div style="--color:red"><span class="boxText">0</span></div>
             <div style="--color:blue"><span class="boxText">1</span></div>
@@ -34,6 +19,7 @@
             <div style="--color:rgb(0,255,0)"><span class="boxText">3</span></div>
         </div>
         <div id="scores">
+            <div id="playerNameDisplay" style="font-weight: bold; margin-bottom: 10px;"></div> <!-- Nuevo div para mostrar el nombre -->
             <div class="transition">
                 <div>Score :&nbsp;</div>
                 <div id="currentScr">
@@ -48,21 +34,22 @@
             </div>
         </div>
     </div>
-    <button onclick="startGame()" id="button">Start Game</button>
-     <div id="gameOverMessage" class="hidden">
+
+    <div id="menu">
+        <h1>Simon Says</h1>
+        <input type="text" id="playerName" placeholder="Ingresa tu nombre" />
+        <button id="startButton">Iniciar Juego</button>
+        <h2>Mejores Puntajes</h2>
+        <div id="highScoresList"></div>
+    </div>
+
+    <!-- Mensaje de Game Over -->
+    <div id="gameOverMessage" class="hidden">
         <h1>Juego Terminado</h1>
         <button id="restartButton">Reiniciar Juego</button>
     </div>
-        
-        
-        </section>
-          
-          
 
-<script src="./script.js"> </script>
+    <script src='https://kit.fontawesome.com/8e5e768940.js' crossorigin='anonymous'></script>
 </body>
-<script src='https://kit.fontawesome.com/8e5e768940.js' crossorigin='anonymous'></script>
 
 </html>
-          
-    
