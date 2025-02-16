@@ -28,43 +28,72 @@ const sounds = {
 // Cargar el nombre del jugador y los puntajes más altos desde localStorage
 function loadHighScores() {
     const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
-    highScoresList.innerHTML = ''; // Limpiar la lista actual
-    highScores.forEach(score => {
-        const scoreItem = document.createElement('div');
-        scoreItem.textContent = `${score.name}: ${score.score}`;
-        highScoresList.appendChild(scoreItem);
-    });
+    const tbody = document.querySelector('#highScoresList tbody');
+    tbody.innerHTML = '';
+
+    // Ordenar DESCENDENTE y luego cortar top 10
+    highScores
+        .sort((a, b) => b.score - a.score) 
+        .slice(0, 10) // Mostrar solo los 10 primeros
+        .forEach((score, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${score.name}</td>
+                <td>${score.score}</td>
+            `;
+            tbody.appendChild(row);
+        });
 }
 
+
 // Guardar el puntaje más alto en localStorage
-function saveHighScore(name, score) {
+function saveHighScore(name, newScore) {
     const highScores = JSON.parse(localStorage.getItem('highScores')) || [];
-    highScores.push({ name, score });
+    
+    // Actualizar o agregar puntaje
+    const existingPlayer = highScores.find(player => player.name === name);
+    if (existingPlayer) {
+        if (newScore > existingPlayer.score) {
+            existingPlayer.score = newScore;
+        }
+    } else {
+        highScores.push({ name, score: newScore });
+    }
+    
+    // Ordenar y guardar todos los registros
+    highScores.sort((a, b) => b.score - a.score);
     localStorage.setItem('highScores', JSON.stringify(highScores));
+    
+    loadHighScores(); // Actualizar tabla
 }
 
 // Iniciar el juego
+
 startButton.addEventListener('click', () => {
     const playerName = playerNameInput.value.trim();
     if (playerName) {
-        localStorage.setItem('playerName', playerName); // Guardar el nombre del jugador
-        document.getElementById('playerNameDisplay').textContent = `Jugador: ${playerName}`; // Mostrar el nombre del jugador
-        menu.classList.add('hidden'); // Ocultar el menú
-        parent.classList.remove('hidden'); // Mostrar el contenedor del juego
-        startGame(); // Iniciar el juego
+        localStorage.setItem('playerName', playerName);
+        document.getElementById('playerNameDisplay').textContent = `Jugador: ${playerName}`;
+        menu.style.display = 'none';  // Cambiar esto 👈
+        parent.classList.remove('hidden');
+        startGame();
     } else {
         alert('Por favor, ingresa tu nombre.');
     }
 });
 
 // Función para iniciar el juego
+
 startGame = () => {
     gameOver = false; 
     gameArray = []; 
     gameArrayIndex = 0; 
     score = 0;
 
-    resetGameVariables();
+   // Restablecer UI sin ocultar el juego
+   currentScr.innerHTML = '<div>0</div>';
+   highScr.innerHTML = `<div>${highestScore}</div>`;
 
     // Mostrar el contenedor del juego y ocultar el botón de inicio
     parent.classList.remove('hidden');
@@ -75,6 +104,7 @@ startGame = () => {
 
     gameAutomate(); // Iniciar la secuencia del juego
 }
+
 
 // Función para manejar el evento de clic en los botones
 function eventlisten() {
@@ -108,19 +138,24 @@ async function gameAutomate() {
 
 // Función para verificar si el jugador ha ganado
 checkWin = (boxText) => {
-    (gameArray[gameArrayIndex] != boxText) ? (resetGame()) : ({});
+    if (gameArray[gameArrayIndex] != boxText) {
+        resetGame();
+        return;
+    }
+
     if (gameArrayIndex == gameArray.length - 1 && !gameOver) {
         setTimeout(() => {
             score++;
+            // === Actualizar puntaje en tiempo real ===
+            currentScr.firstElementChild.textContent = score; // 👈 Línea clave
             if (score > highestScore) {
                 highestScore = score;
-                const playerName = localStorage.getItem('playerName');
-                saveHighScore(playerName, highestScore); // Guardar el nuevo puntaje más alto
+                saveHighScore(localStorage.getItem('playerName'), highestScore);
             }
-            gameAutomate(); // Iniciar la siguiente ronda
+            gameAutomate();
         }, 500);
     }
-    if (gameArray.length != 0) { gameArrayIndex++; }
+    gameArrayIndex++;
 }
 
 // Función para mostrar los colores en la secuencia
@@ -165,29 +200,67 @@ setColor = () => {
 
 // Función para reiniciar el juego
 function resetGame() {
-    gameOver = true; // Indica que el juego ha terminado
+    // 1. Capturar el puntaje REAL antes de reiniciar variables
+    const finalScore = score;
+    
+    // 2. Mostrar mensaje de fin con puntaje correcto
+    const existingMessage = document.getElementById('gameOverMessage');
+    if (existingMessage) existingMessage.remove();
+    
+    const gameOverMessage = document.createElement('div');
+    gameOverMessage.id = 'gameOverMessage';
+    gameOverMessage.innerHTML = `
+        <h2>¡Juego Terminado!</h2>
+        <p>Puntaje: ${finalScore}</p>
+        <button onclick="resetGameAndRestart()">Reintentar</button>
+       <button onclick="returnToMenu()">Menú Principal</button> 
+    `;
+    document.body.appendChild(gameOverMessage);
 
-    // Remover los event listeners de todos los elementos del juego
-    divs.forEach(e => {
-        e.removeEventListener('click', eventlisten);
-        e.style.cursor = 'default';
+    // 3. Reiniciar estado del juego
+    gameOver = true;
+    gameArray = [];
+    gameArrayIndex = 0;
+    score = 0;  // Reset solo después de mostrar el puntaje
+    
+    // 4. Limpiar listeners y UI
+    divs.forEach(div => {
+        div.style.pointerEvents = 'none'; // Desactivar clicks
+        div.classList.remove('flash');
     });
+    
+    // 5. Guardar puntaje máximo
+    const playerName = localStorage.getItem('playerName');
+    if (playerName && finalScore > 0) {
+        saveHighScore(playerName, finalScore);
+    }
 
-    // Mostrar el mensaje de "Juego Terminado"
-    document.getElementById('gameOverMessage').classList.remove('hidden');
-
-    // Calcular las puntuaciones actuales y más altas
-    let curscr = Array.from(document.querySelectorAll('#currentScr div')).length; 
-    let highscr = Array.from(document.querySelectorAll('#highScr div')).length;
-
-    // Actualizar las puntuaciones en la interfaz
-    addElements(score, curscr, currentScr); 
-    addElements(highestScore, highscr, highScr);
-
-    // Agregar evento al botón de cerrar
-    close = document.getElementById('close');
-    close.addEventListener('click', scale);
+    // Actualizar tabla de puntajes al mostrar el menú
+    if (document.getElementById('menu').style.display === 'flex') {
+        loadHighScores(); 
+    }
+    
 }
+
+// Función para reinicio completo
+function resetGameAndRestart() {
+    document.getElementById('gameOverMessage').remove();
+    divs.forEach(div => div.style.pointerEvents = 'auto'); 
+    parent.classList.remove('hidden');
+    
+    // Reiniciar variables sin recargar
+    gameArray = [];
+    gameArrayIndex = 0;
+    score = 0;
+    currentScr.innerHTML = '<div>0</div>';
+    
+    startGame(); // Iniciar nueva partida
+}
+
+document.getElementById('reiniciar').addEventListener('click', () => {
+    resetGame();
+    menu.style.display = 'flex';  // 
+});
 
 // Función para agregar elementos a la interfaz
 function addElements(a, b, c) {
@@ -201,19 +274,35 @@ function addElements(a, b, c) {
     c.style.transform = `translateY(${-50 * a}px)`;
 }
 
-// Función para reiniciar las variables del juego
-function resetGameVariables() {
-    gameOver = false; 
-    gameArray = []; 
-    gameArrayIndex = 0; 
-    score = 0;
-
-    // Restablecer la puntuación en la interfaz
-    currentScr.innerHTML = '<div>0</div>'; // Restablecer la puntuación actual
-    highScr.innerHTML = '<div>' + highestScore + '</div>'; // Mostrar el mejor puntaje
-}
 
 // Cargar los puntajes más altos al cargar la página
 window.onload = () => {
     loadHighScores();
+
+    const savedName = localStorage.getItem('playerName');
+    if (savedName) {
+        document.getElementById('playerName').value = savedName;
+    }
 };
+
+function returnToMenu() {
+    // Resetear completamente el estado del juego
+    gameOver = true;
+    gameArray = [];
+    gameArrayIndex = 0;
+    score = 0;
+
+    // Limpiar UI y mensajes
+    document.getElementById('gameOverMessage')?.remove();
+    divs.forEach(div => {
+        div.style.pointerEvents = 'auto';
+        div.classList.remove('flash');
+    });
+
+    // Mostrar menú y ocultar juego
+    menu.style.display = 'flex';
+    parent.classList.add('hidden');
+    
+    // Recargar puntajes
+    loadHighScores();
+}
