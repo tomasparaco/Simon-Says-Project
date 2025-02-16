@@ -12,7 +12,7 @@
 
 <body>
     <div class="parent hidden" id="parent">
-        <h1 id="gameTitle">Simon Says</h1> <!-- Título del juego -->
+        <h1 id="gameTitle">Simon Says</h1> 
         <div id="container">
             <div style="--color:red"><span class="boxText">0</span></div>
             <div style="--color:blue"><span class="boxText">1</span></div>
@@ -35,18 +35,29 @@
             </div>
         </div>
 
-        <button id="reiniciar">Reiniciar juego</button>
     </div>
 
     <div id="menu">
         <h1>Simon Says</h1>
         <input type="text" id="playerName" placeholder="Ingresa tu nombre" />
         <button id="startButton">Iniciar Juego</button>
-        <h2>Mejores Puntajes</h2>
-        <div id="highScoresList"></div>
+        
+        <h2>🏆 Mejores Puntajes</h2>
+        <div id="highScoresList">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th> 
+                        <th>Jugador</th>
+                        <th>Puntaje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+        </div>
     </div>
-
-   
 
     <script src='https://kit.fontawesome.com/8e5e768940.js' crossorigin='anonymous'></script>
 </body>
